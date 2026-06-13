@@ -1,0 +1,44 @@
+name: Check proxy config pattern
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Set up SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.ALIYUN_SSH_KEY }}
+
+      - name: Trust server host key
+        env:
+          ALIYUN_PORT: ${{ secrets.ALIYUN_PORT }}
+        run: |
+          SSH_PORT="${ALIYUN_PORT:-22}"
+          mkdir -p ~/.ssh
+          ssh-keyscan -p "$SSH_PORT" -H "${{ secrets.ALIYUN_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Compare configs
+        env:
+          ALIYUN_PORT: ${{ secrets.ALIYUN_PORT }}
+        run: |
+          SSH_PORT="${ALIYUN_PORT:-22}"
+          ssh -p "$SSH_PORT" "${{ secrets.ALIYUN_USER }}@${{ secrets.ALIYUN_HOST }}" '
+          echo "=== compare our config with working port 8084 config ==="
+          echo "--- Our config (8086) ---"
+          cat /www/server/panel/vhost/nginx/teacher-boundary-guide.conf
+          echo ""
+          echo "--- Working config (8084) ---"
+          cat /www/server/panel/vhost/nginx/0.0.0.0_8084.conf
+          echo ""
+          echo "--- proxy directory ---"
+          ls -la /www/server/panel/vhost/nginx/proxy/ 2>/dev/null
+          echo ""
+          echo "--- Any proxy configs for ports ---"
+          grep -rl "listen.*808[0-9]" /www/server/panel/vhost/nginx/ 2>/dev/null
+          '
