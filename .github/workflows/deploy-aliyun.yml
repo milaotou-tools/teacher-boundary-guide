@@ -67,22 +67,22 @@ jobs:
           ./deploy.sh
           EOF
 
-      - name: Set up .env from secrets
+      - name: Write .env from secrets
         env:
           ALIYUN_PORT: ${{ secrets.ALIYUN_PORT }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          APP_ENCRYPTION_KEY: ${{ secrets.APP_ENCRYPTION_KEY }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
         run: |
           SSH_PORT="${ALIYUN_PORT:-22}"
-          ssh -p "$SSH_PORT" "${{ secrets.ALIYUN_USER }}@${{ secrets.ALIYUN_HOST }}" '
-          cat <<ENVEOF > /www/wwwroot/teacher-boundary-guide/.env
+          ssh -p "$SSH_PORT" "${{ secrets.ALIYUN_USER }}@${{ secrets.ALIYUN_HOST }}" 'cat > /www/wwwroot/teacher-boundary-guide/.env' <<STDENV
           PORT=4173
           HOST=127.0.0.1
           NODE_ENV=production
-          DEEPSEEK_API_KEY=${{ secrets.DEEPSEEK_API_KEY }}
+          DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
           DEEPSEEK_MODEL=deepseek-v4-flash
-          APP_ENCRYPTION_KEY=${{ secrets.APP_ENCRYPTION_KEY }}
-          ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}
+          APP_ENCRYPTION_KEY=${APP_ENCRYPTION_KEY}
+          ADMIN_PASSWORD=${ADMIN_PASSWORD}
           TRUST_PROXY=true
-          ENVEOF
-          pm2 restart teacher-boundary-guide --update-env
-          pm2 save
-          '
+          STDENV
+          ssh -p "$SSH_PORT" "${{ secrets.ALIYUN_USER }}@${{ secrets.ALIYUN_HOST }}" 'pm2 restart teacher-boundary-guide --update-env && pm2 save'
