@@ -1,0 +1,58 @@
+name: Debug Nginx 502
+
+on:
+  workflow_dispatch:
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Set up SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.ALIYUN_SSH_KEY }}
+
+      - name: Trust server host key
+        env:
+          ALIYUN_PORT: ${{ secrets.ALIYUN_PORT }}
+        run: |
+          SSH_PORT="${ALIYUN_PORT:-22}"
+          mkdir -p ~/.ssh
+          ssh-keyscan -p "$SSH_PORT" -H "${{ secrets.ALIYUN_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Diagnose Nginx
+        env:
+          ALIYUN_PORT: ${{ secrets.ALIYUN_PORT }}
+        run: |
+          SSH_PORT="${ALIYUN_PORT:-22}"
+          ssh -p "$SSH_PORT" "${{ secrets.ALIYUN_USER }}@${{ secrets.ALIYUN_HOST }}" '
+          echo "=== Nginx config includes ==="
+          grep -r "include" /www/server/nginx/conf/nginx.conf 2>/dev/null | head -10
+
+          echo ""
+          echo "=== Our config file ==="
+          cat /www/server/panel/vhost/nginx/teacher-boundary-guide.conf 2>/dev/null || echo "file not found"
+
+          echo ""
+          echo "=== All vhost configs ==="
+          ls -la /www/server/panel/vhost/nginx/ 2>/dev/null
+
+          echo ""
+          echo "=== Nginx error log (recent) ==="
+          tail -20 /www/server/nginx/logs/error.log 2>/dev/null || tail -20 /var/log/nginx/error.log 2>/dev/null
+
+          echo ""
+          echo "=== Test proxy from outside perspective ==="
+          curl -v -s -o /dev/null -w "\nHTTP %{http_code}\n" http://116.62.220.255:8086/ 2>&1 | tail -10
+
+          echo ""
+          echo "=== Test with explicit Host header ==="
+          curl -s -o /dev/null -w "HTTP %{http_code}\n" -H "Host: 116.62.220.255:8086" http://127.0.0.1:8086/
+
+          echo ""
+          echo "=== Check if other server block catches it ==="
+          curl -s -o /dev/null -w "HTTP %{http_code}\n" http://localhost:8086/
+          '
