@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex,nofollow">
+    <meta name="theme-color" content="#f3efe4">
+    <title>内测管理｜这事该我管吗？</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html"><span class="brand-mark">问</span><span>有限生长管理台</span></a>
+      <button class="text-button" id="logout-button" type="button" hidden>退出</button>
+    </header>
+    <main class="admin-page">
+      <section class="admin-login flow-panel" id="login-panel">
+        <p class="eyebrow">单管理员</p>
+        <h1>管理授权投稿与候选问题</h1>
+        <form id="login-form">
+          <label class="field-label" for="admin-password">管理员密码</label>
+          <input id="admin-password" type="password" autocomplete="current-password" required>
+          <button class="primary-button" type="submit">登录</button>
+        </form>
+        <p class="field-help">本地开发默认密码为 admin-demo；生产环境必须通过环境变量设置。</p>
+      </section>
+
+      <div id="dashboard" hidden>
+        <section class="admin-heading">
+          <div>
+            <p class="eyebrow">首轮内测仪表盘</p>
+            <h1>只研究已经聚合出的真实问题</h1>
+          </div>
+          <div class="beta-meter" id="beta-meter"></div>
+        </section>
+
+        <section class="admin-tools">
+          <div>
+            <h2>生成邀请码</h2>
+            <form id="invite-form" class="inline-form">
+              <input id="invite-label" placeholder="例如：第一批同事" maxlength="80">
+              <button class="secondary-button" type="submit">生成3次邀请码</button>
+            </form>
+            <output id="invite-output"></output>
+          </div>
+          <div>
+            <h2>效果指标</h2>
+            <p id="feedback-metric">尚无反馈</p>
+          </div>
+        </section>
+
+        <section class="admin-section">
+          <div class="section-heading">
+            <div><p class="eyebrow">相似问题聚合</p><h2>候选研究问题</h2></div>
+            <p>累计3份相似授权投稿后，才达到默认研究门槛。</p>
+          </div>
+          <div id="cluster-list" class="cluster-list"></div>
+        </section>
+
+        <section class="admin-section">
+          <div class="section-heading">
+            <div><p class="eyebrow">仅去标识化内容</p><h2>已授权投稿</h2></div>
+          </div>
+          <div id="submission-list" class="submission-list"></div>
+        </section>
+      </div>
+      <div class="flow-message" id="admin-message" hidden></div>
+    </main>
+    <script src="admin.js"></script>
+  </body>
+</html>

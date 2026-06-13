@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="面向浙江省公办小学新班主任的职责边界场景指南。">
+    <meta name="theme-color" content="#f3efe4">
+    <title>这事该我管吗？</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#scenes">跳到场景列表</a>
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="这事该我管吗首页">
+        <span class="brand-mark">问</span>
+        <span>这事该我管吗？</span>
+      </a>
+      <span class="header-note">浙江 · 公办小学 · 新班主任</span>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">给入职 1—5 年的班主任</p>
+          <h1>不是教你“硬碰硬”，<br><em>是帮你把问题问清楚。</em></h1>
+          <p class="hero-intro">
+            当学校又交来一件事，先查清：你负责到哪里、学校该做什么、文件究竟怎么说，以及怎样有依据地开口。
+          </p>
+          <div class="hero-actions">
+            <a class="primary-button" href="submit.html">说说我遇到的事</a>
+            <a class="secondary-button" href="#scenes">查看 12 个真实场景</a>
+            <button class="text-button" type="button" data-dialog-open>使用前先看边界</button>
+          </div>
+        </div>
+        <aside class="hero-card" aria-label="网站使用方法">
+          <p class="hero-card-kicker">三分钟查清一件事</p>
+          <ol>
+            <li><span>01</span>找到和你相似的场景</li>
+            <li><span>02</span>区分职责、协助与学校责任</li>
+            <li><span>03</span>复制一段有依据的表达</li>
+          </ol>
+          <p class="hero-card-foot">邀请内测：匿名投稿，AI只做梳理，公共场景仍由人工核验发布。</p>
+        </aside>
+      </section>
+
+      <section class="principles" aria-label="判断原则">
+        <article>
+          <span>职责</span>
+          <strong>该做什么</strong>
+          <p>班主任有教育、管理和协调责任。</p>
+        </article>
+        <article>
+          <span>边界</span>
+          <strong>做到哪里</strong>
+          <p>“协调”不等于所有事情都独自执行。</p>
+        </article>
+        <article>
+          <span>支持</span>
+          <strong>谁来共同承担</strong>
+          <p>学校也应提供制度、人员和专业支持。</p>
+        </article>
+      </section>
+
+      <section class="scene-index" id="scenes">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">真实场景索引</p>
+            <h2>你现在卡在哪件事上？</h2>
+          </div>
+          <div class="legend" aria-label="依据状态说明">
+            <span class="status status-explicit">有明确规定</span>
+            <span class="status status-policy">有政策依据</span>
+            <span class="status status-explain">需学校说明</span>
+          </div>
+        </div>
+        <div id="section-list"></div>
+      </section>
+
+      <section class="notice-strip">
+        <p class="notice-quote">查不到明确的拒绝依据，不代表你的疲惫不合理；它可能意味着现行规则没有充分回应一线教师的真实负担。</p>
+        <p><strong>先问依据，再谈对错。</strong> 没有统一规定时，最有用的不是一句“违法了”，而是请学校说明规则、分工、工作量和调整机制。</p>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>这事该我管吗？ · 教师职责边界场景指南</p>
+      <p>内容仅供政策信息参考，不替代个案审查或专业法律意见。最后核验：2026-06-13</p>
+    </footer>
+
+    <dialog class="boundary-dialog" id="boundary-dialog">
+      <button class="dialog-close" type="button" aria-label="关闭" data-dialog-close>×</button>
+      <p class="eyebrow">网站边界</p>
+      <h2>它帮你把问题说准确，<br>但不会替你给学校定性。</h2>
+      <ul>
+        <li>只引用国家和浙江省官方文件。</li>
+        <li>没有统一规定的地方，会明确写“需学校说明”。</li>
+        <li>区级和校级制度可能影响具体执行，请继续核对本地文件。</li>
+        <li>不建议擅自离岗或直接拒绝任务，优先提出书面核实和可执行的调整方案。</li>
+      </ul>
+      <button class="primary-button" type="button" data-dialog-close>我知道了</button>
+    </dialog>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

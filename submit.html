@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="匿名提交班主任职责与工作量困惑，获得问题梳理和低冲突表达。">
+    <meta name="theme-color" content="#f3efe4">
+    <title>说说我遇到的事｜这事该我管吗？</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html"><span class="brand-mark">问</span><span>这事该我管吗？</span></a>
+      <a class="back-link" href="index.html">返回场景首页</a>
+    </header>
+    <main class="flow-page">
+      <section class="flow-intro">
+        <p class="eyebrow">邀请制内测 · 不需要注册</p>
+        <h1>把一件让你为难的事，<br><em>说具体一点。</em></h1>
+        <p>可以真实倾诉，但请先删除姓名、学校、班级和联系方式。系统还会再次遮盖明显识别信息，AI只接收遮盖后的文字。</p>
+      </section>
+
+      <aside class="scope-box">
+        <strong>首轮只处理五类问题</strong>
+        <p>班主任职责边界、任务叠加和工作量、学生行为与学校支持、午管晚托、怎样低冲突地提出问题。</p>
+        <small>暂不处理工资休假、职称人事、处分申诉、心理咨询、正在发生的安全事故或有明确期限的案件。</small>
+      </aside>
+
+      <ol class="flow-steps" aria-label="投稿步骤">
+        <li class="is-active" data-step-marker="1"><span>1</span>写下困惑</li>
+        <li data-step-marker="2"><span>2</span>只选一件</li>
+        <li data-step-marker="3"><span>3</span>确认事实</li>
+        <li data-step-marker="4"><span>4</span>查看结果</li>
+      </ol>
+
+      <div class="flow-shell" id="flow-shell">
+        <section class="flow-panel" data-panel="start">
+          <form id="start-form">
+            <label class="field-label" for="invite-code">邀请码</label>
+            <input id="invite-code" name="inviteCode" maxlength="80" autocomplete="off" required>
+            <p class="field-help" id="demo-invite"></p>
+
+            <label class="field-label" for="story">这件事具体是怎样发生的？</label>
+            <textarea id="story" name="story" rows="10" minlength="50" maxlength="1500" required placeholder="例如：我是入职第三年的数学老师，教两个班并担任班主任。学校安排我每天轮流管理两个班的午自习，两周还要参加5次晚托……"></textarea>
+            <div class="field-row">
+              <span class="field-help">写清任务、频次、时间和学校如何安排，更容易得到有用结果。</span>
+              <span id="char-count">0 / 1500</span>
+            </div>
+            <button class="primary-button" type="submit">开始梳理</button>
+          </form>
+        </section>
+
+        <section class="flow-panel" data-panel="choose" hidden>
+          <p class="eyebrow">一次只解决一件事</p>
+          <h2>你现在最想先弄清哪一项？</h2>
+          <p class="privacy-note" id="redaction-note"></p>
+          <form id="choose-form">
+            <div class="issue-options" id="issue-options"></div>
+            <button class="primary-button" type="submit">就梳理这一项</button>
+          </form>
+        </section>
+
+        <section class="flow-panel" data-panel="question" hidden>
+          <p class="eyebrow" id="question-number">补充一个关键事实</p>
+          <h2 id="question-text"></h2>
+          <form id="answer-form">
+            <label class="field-label" for="answer">你的回答</label>
+            <textarea id="answer" rows="5" minlength="2" maxlength="500" required></textarea>
+            <button class="primary-button" type="submit">继续</button>
+          </form>
+        </section>
+
+        <section class="flow-panel" data-panel="confirm" hidden>
+          <p class="eyebrow">发布前由你确认</p>
+          <h2>系统是这样理解这件事的</h2>
+          <form id="confirm-form">
+            <label class="field-label" for="summary-title">场景标题</label>
+            <input id="summary-title" maxlength="50" required>
+            <label class="field-label" for="summary-situation">具体情况</label>
+            <textarea id="summary-situation" rows="6" maxlength="600" required></textarea>
+            <label class="field-label" for="summary-question">你真正想问的问题</label>
+            <textarea id="summary-question" rows="3" maxlength="120" required></textarea>
+            <label class="field-label" for="summary-facts">关键事实，每行一项</label>
+            <textarea id="summary-facts" rows="5" maxlength="800"></textarea>
+            <div class="consent-box">
+              <label>
+                <input type="checkbox" id="aggregate-consent">
+                <span>我主动授权：将以上去标识化内容计入“有多少教师遇到类似问题”的统计，并供管理员研究新场景。</span>
+              </label>
+              <small>不勾选也能查看私人结果。网站不会公开你的原始倾诉。</small>
+            </div>
+            <div class="form-actions">
+              <button class="primary-button" type="submit">确认并生成结果</button>
+              <button class="text-button" type="button" id="rewrite-button">还缺一个重要事实</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="flow-panel flow-finish" data-panel="finish" hidden>
+          <p class="eyebrow">私人结果已生成</p>
+          <h2>请保存这条私密链接</h2>
+          <p>它将在90天后失效。网站没有账号和找回系统，链接丢失后无法找回。</p>
+          <a class="primary-button" id="result-link" href="#">查看我的结果</a>
+        </section>
+
+        <div class="flow-message" id="flow-message" role="status" hidden></div>
+      </div>
+    </main>
+    <footer class="site-footer">
+      <p>这事该我管吗？ · 有限生长内测</p>
+      <p>AI内容不会直接进入公共场景；新场景仍需人工核验国家和浙江省官方文件。</p>
+    </footer>
+    <script src="submit.js"></script>
+  </body>
+</html>

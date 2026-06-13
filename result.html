@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex,nofollow">
+    <meta name="theme-color" content="#f3efe4">
+    <title>我的私人结果｜这事该我管吗？</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html"><span class="brand-mark">问</span><span>这事该我管吗？</span></a>
+      <a class="back-link" href="index.html">查看公开场景</a>
+    </header>
+    <main class="result-page">
+      <div id="result-loading" class="flow-panel">正在读取私人结果…</div>
+      <article id="result-content" hidden>
+        <section class="result-hero">
+          <p class="eyebrow">你的问题已经说清楚了</p>
+          <h1 id="result-title"></h1>
+          <p id="result-situation"></p>
+          <div class="result-notice" id="result-notice"></div>
+        </section>
+
+        <section class="result-grid">
+          <div class="result-block">
+            <p class="eyebrow">真正要问的</p>
+            <h2 id="result-question"></h2>
+          </div>
+          <div class="result-block">
+            <p class="eyebrow">关键事实</p>
+            <ul id="result-facts"></ul>
+          </div>
+        </section>
+
+        <section class="matched-block" id="matched-block" hidden>
+          <p class="eyebrow">匹配到已有核验场景</p>
+          <h2 id="matched-title"></h2>
+          <p id="matched-question"></p>
+          <a class="secondary-button" id="matched-link" href="#">查看官方依据和职责边界</a>
+        </section>
+
+        <section class="result-block">
+          <p class="eyebrow">可以先请学校说明</p>
+          <ul id="school-questions"></ul>
+        </section>
+
+        <section class="template-block result-template">
+          <div class="template-heading">
+            <div><p class="eyebrow">可直接使用</p><h2>低冲突沟通表达</h2></div>
+            <button class="copy-button" id="copy-result" type="button">复制这段话</button>
+          </div>
+          <blockquote id="expression-template"></blockquote>
+        </section>
+
+        <section class="result-controls">
+          <div>
+            <strong>这次梳理对你有帮助吗？</strong>
+            <button class="small-button" data-helpful="true" type="button">有帮助</button>
+            <button class="small-button" data-helpful="false" type="button">没说清楚</button>
+          </div>
+          <p id="consent-status"></p>
+          <div>
+            <button class="text-button" id="withdraw-button" type="button">撤回聚合授权</button>
+            <button class="danger-button" id="delete-button" type="button">删除私人结果</button>
+          </div>
+        </section>
+      </article>
+      <div class="flow-message" id="result-message" hidden></div>
+    </main>
+    <footer class="site-footer">
+      <p>私密链接有效期90天，请自行保存。</p>
+      <p>未匹配问题不生成新的政策结论；公共场景只由人工核验后发布。</p>
+    </footer>
+    <script src="result.js"></script>
+  </body>
+</html>

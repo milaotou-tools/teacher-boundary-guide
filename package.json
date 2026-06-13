@@ -1,0 +1,20 @@
+{
+  "name": "teacher-boundary-guide",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Teacher boundary guide and limited-growth submission tool",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "check": "node check-content.js",
+    "test": "node --test",
+    "cleanup": "node scripts/cleanup-expired.js",
+    "eval:ai": "node scripts/evaluate-ai.js"
+  },
+  "dependencies": {
+    "@fastify/cookie": "^11.0.2",
+    "better-sqlite3": "^12.4.1",
+    "fastify": "^5.6.2",
+    "zod": "^4.1.12"
+  }
+}
