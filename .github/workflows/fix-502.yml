@@ -1,0 +1,56 @@
+name: Fix 502 and verify
+
+on:
+  workflow_dispatch:
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Set up SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.ALIYUN_SSH_KEY }}
+
+      - name: Trust server host key
+        env:
+          ALIYUN_PORT: ${{ secrets.ALIYUN_PORT }}
+        run: |
+          SSH_PORT="${ALIYUN_PORT:-22}"
+          mkdir -p ~/.ssh
+          ssh-keyscan -p "$SSH_PORT" -H "${{ secrets.ALIYUN_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Fix SELinux and verify
+        env:
+          ALIYUN_PORT: ${{ secrets.ALIYUN_PORT }}
+        run: |
+          SSH_PORT="${ALIYUN_PORT:-22}"
+          ssh -p "$SSH_PORT" "${{ secrets.ALIYUN_USER }}@${{ secrets.ALIYUN_HOST }}" '
+          set -e
+
+          echo "=== Step 1: Allow Nginx network connect (SELinux) ==="
+          if command -v setsebool &>/dev/null; then
+            setsebool -P httpd_can_network_connect 1 2>/dev/null && echo "SELinux boolean set OK" || echo "SELinux not enforcing or failed (may be OK)"
+          else
+            echo "SELinux tools not available"
+          fi
+
+          echo ""
+          echo "=== Step 2: Test Nginx to backend ==="
+          curl -s -o /dev/null -w "Direct backend: HTTP %{http_code}\n" http://127.0.0.1:4173/ || echo "backend unreachable"
+
+          echo ""
+          echo "=== Step 3: Test via Nginx localhost ==="
+          curl -s -o /dev/null -w "Nginx localhost:8086: HTTP %{http_code}\n" http://127.0.0.1:8086/ || echo "nginx localhost unreachable"
+
+          echo ""
+          echo "=== Step 4: Check PM2 logs ==="
+          pm2 logs teacher-boundary-guide --lines 10 --nostream 2>/dev/null || echo "no pm2 logs"
+
+          echo ""
+          echo "=== Step 5: Check Nginx error log ==="
+          tail -5 /www/server/nginx/logs/error.log 2>/dev/null || tail -5 /var/log/nginx/error.log 2>/dev/null || echo "no nginx error log"
+          '
