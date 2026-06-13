@@ -41,18 +41,31 @@ jobs:
           ls -la /www/server/panel/vhost/nginx/ 2>/dev/null
 
           echo ""
-          echo "=== Nginx error log (recent) ==="
-          tail -20 /www/server/nginx/logs/error.log 2>/dev/null || tail -20 /var/log/nginx/error.log 2>/dev/null
+          echo "=== Nginx access log for 8086 ==="
+          tail -20 /www/wwwlogs/0.0.0.0_8086.log 2>/dev/null || echo "no access log yet"
 
           echo ""
-          echo "=== Test proxy from outside perspective ==="
-          curl -v -s -o /dev/null -w "\nHTTP %{http_code}\n" http://116.62.220.255:8086/ 2>&1 | tail -10
+          echo "=== Nginx error log for 8086 ==="
+          tail -10 /www/wwwlogs/0.0.0.0_8086.error.log 2>/dev/null || echo "no error log"
 
           echo ""
-          echo "=== Test with explicit Host header ==="
+          echo "=== Firewall status ==="
+          iptables -L INPUT -n --line-numbers 2>/dev/null | grep 8086 || echo "no iptables rule for 8086"
+          firewall-cmd --list-ports 2>/dev/null || echo "firewalld not running"
+
+          echo ""
+          echo "=== Test with explicit Host ==="
           curl -s -o /dev/null -w "HTTP %{http_code}\n" -H "Host: 116.62.220.255:8086" http://127.0.0.1:8086/
 
           echo ""
-          echo "=== Check if other server block catches it ==="
+          echo "=== Test localhost ==="
           curl -s -o /dev/null -w "HTTP %{http_code}\n" http://localhost:8086/
+          echo ""
+          echo "Debug done"
           '
+
+      - name: Test from external (GitHub Actions runner)
+        run: |
+          echo "=== Testing from GitHub Actions runner (external) ==="
+          curl -s -o /dev/null -w "Direct 8086: HTTP %{http_code}\n" --connect-timeout 10 "http://116.62.220.255:8086/" || echo "8086 test failed"
+          curl -s -o /dev/null -w "Direct 8083: HTTP %{http_code}\n" --connect-timeout 10 "http://116.62.220.255:8083/" || echo "8083 test failed"
