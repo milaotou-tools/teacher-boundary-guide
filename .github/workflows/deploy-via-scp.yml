@@ -1,0 +1,124 @@
+name: Deploy via SCP (bypass git)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.ALIYUN_SSH_KEY }}
+
+      - name: Trust server host key
+        env:
+          ALIYUN_PORT: ${{ secrets.ALIYUN_PORT }}
+        run: |
+          SSH_PORT="${ALIYUN_PORT:-22}"
+          mkdir -p ~/.ssh
+          ssh-keyscan -p "$SSH_PORT" -H "${{ secrets.ALIYUN_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Tar and SCP source
+        env:
+          ALIYUN_PORT: ${{ secrets.ALIYUN_PORT }}
+        run: |
+          SSH_PORT="${ALIYUN_PORT:-22}"
+          USER_HOST="${{ secrets.ALIYUN_USER }}@${{ secrets.ALIYUN_HOST }}"
+
+          tar --exclude='.git' --exclude='node_modules' --exclude='.env' \
+            -czf /tmp/deploy.tar.gz .
+
+          scp -P "$SSH_PORT" /tmp/deploy.tar.gz "$USER_HOST:/tmp/deploy.tar.gz"
+
+      - name: Write .env on server
+        env:
+          ALIYUN_PORT: ${{ secrets.ALIYUN_PORT }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          APP_ENCRYPTION_KEY: ${{ secrets.APP_ENCRYPTION_KEY }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+        run: |
+          SSH_PORT="${ALIYUN_PORT:-22}"
+          # Pipe heredoc to remote cat — local env vars are expanded by the runner shell
+          ssh -p "$SSH_PORT" "${{ secrets.ALIYUN_USER }}@${{ secrets.ALIYUN_HOST }}" 'cat > /tmp/app.env' <<STDENV
+          PORT=4173
+          HOST=127.0.0.1
+          NODE_ENV=production
+          DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+          DEEPSEEK_MODEL=deepseek-v4-flash
+          APP_ENCRYPTION_KEY=${APP_ENCRYPTION_KEY}
+          ADMIN_PASSWORD=${ADMIN_PASSWORD}
+          TRUST_PROXY=true
+          STDENV
+
+      - name: Rebuild and restart on server
+        env:
+          ALIYUN_PORT: ${{ secrets.ALIYUN_PORT }}
+        run: |
+          SSH_PORT="${ALIYUN_PORT:-22}"
+          ssh -p "$SSH_PORT" "${{ secrets.ALIYUN_USER }}@${{ secrets.ALIYUN_HOST }}" '
+          set -e
+
+          DEPLOY_PATH=/www/wwwroot/teacher-boundary-guide
+          PM2_NAME=teacher-boundary-guide
+          APP_PORT=4173
+
+          # Kill PM2 first
+          pm2 delete "$PM2_NAME" 2>/dev/null || true
+          pm2 save --force
+          sleep 1
+          fuser -k "$APP_PORT"/tcp 2>/dev/null || true
+
+          mkdir -p "$DEPLOY_PATH"
+          cd "$DEPLOY_PATH"
+
+          # Clean old source but keep .user.ini
+          find . -mindepth 1 -not -name ".user.ini" -delete 2>/dev/null || true
+
+          # Extract new source
+          tar -xzf /tmp/deploy.tar.gz
+          rm /tmp/deploy.tar.gz
+
+          # Move .env into place
+          mv /tmp/app.env "$DEPLOY_PATH/.env"
+
+          # Install dependencies
+          NPM_CACHE_DIR="$HOME/.npm-cache"
+          mkdir -p "$NPM_CACHE_DIR"
+          export npm_config_cache="$NPM_CACHE_DIR"
+
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+
+          # Ensure storage directory
+          mkdir -p "$DEPLOY_PATH/storage"
+
+          # Start
+          pm2 start ecosystem.config.cjs --update-env
+          pm2 save
+
+          echo "=== PM2 status ==="
+          pm2 list
+          echo "=== Port check ==="
+          ss -tlnp | grep "$APP_PORT" || echo "port $APP_PORT not listening"
+          echo "Deploy done"
+          '
+
+      - name: Verify HTTP response
+        env:
+          ALIYUN_PORT: ${{ secrets.ALIYUN_PORT }}
+        run: |
+          SSH_PORT="${ALIYUN_PORT:-22}"
+          ssh -p "$SSH_PORT" "${{ secrets.ALIYUN_USER }}@${{ secrets.ALIYUN_HOST }}" '
+          echo "=== Local health check ==="
+          curl -s -o /dev/null -w "HTTP %{http_code}\n" http://127.0.0.1:4173/ || echo "health check failed"
+          '
