@@ -88,6 +88,12 @@ jobs:
           # Move .env into place
           mv /tmp/app.env "$DEPLOY_PATH/.env"
 
+          # Install build tools for native modules (better-sqlite3)
+          dnf install -y gcc-c++ make python3 2>/dev/null || yum install -y gcc-c++ make python3 2>/dev/null || true
+
+          # Clear potentially corrupted node-gyp cache
+          rm -rf "$HOME/.cache/node-gyp" 2>/dev/null || true
+
           # Install dependencies
           NPM_CACHE_DIR="$HOME/.npm-cache"
           mkdir -p "$NPM_CACHE_DIR"
