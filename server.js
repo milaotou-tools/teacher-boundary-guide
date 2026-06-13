@@ -597,7 +597,7 @@ async function buildServer(overrides = {}) {
     if (!requireAdmin(request, reply)) return;
     const schema = z.object({
       label: z.string().trim().max(80).default(""),
-      maxUses: z.number().int().min(1).max(3).default(3),
+      maxUses: z.number().int().min(1).max(30).default(30),
       expiresInDays: z.number().int().min(1).max(365).default(30),
     });
     const body = parseBody(schema, request.body, reply);
