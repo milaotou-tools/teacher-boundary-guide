@@ -1,0 +1,93 @@
+name: Setup Public Port (one-time)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Set up SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.ALIYUN_SSH_KEY }}
+
+      - name: Trust server host key
+        env:
+          ALIYUN_PORT: ${{ secrets.ALIYUN_PORT }}
+        run: |
+          SSH_PORT="${ALIYUN_PORT:-22}"
+          mkdir -p ~/.ssh
+          ssh-keyscan -p "$SSH_PORT" -H "${{ secrets.ALIYUN_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Configure Nginx and firewall
+        env:
+          ALIYUN_PORT: ${{ secrets.ALIYUN_PORT }}
+        run: |
+          SSH_PORT="${ALIYUN_PORT:-22}"
+          ssh -p "$SSH_PORT" "${{ secrets.ALIYUN_USER }}@${{ secrets.ALIYUN_HOST }}" '
+          set -e
+
+          PUBLIC_PORT=8086
+          INTERNAL_PORT=4173
+
+          # Add Nginx config
+          cat <<NGINXEOF > /www/server/panel/vhost/nginx/teacher-boundary-guide.conf
+          server {
+              listen ${PUBLIC_PORT};
+              server_name 116.62.220.255;
+
+              location / {
+                  proxy_pass http://127.0.0.1:${INTERNAL_PORT};
+                  proxy_set_header Host \$host;
+                  proxy_set_header X-Real-IP \$remote_addr;
+                  proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+                  proxy_set_header X-Forwarded-Proto \$scheme;
+                  proxy_connect_timeout 30s;
+                  proxy_send_timeout 30s;
+                  proxy_read_timeout 180s;
+              }
+          }
+          NGINXEOF
+
+          echo "Nginx config written"
+
+          # Test and reload Nginx
+          nginx -t
+          nginx -s reload
+          echo "Nginx reloaded OK"
+
+          # Open firewall port
+          if command -v firewall-cmd &>/dev/null; then
+            firewall-cmd --add-port=${PUBLIC_PORT}/tcp --permanent 2>/dev/null || true
+            firewall-cmd --reload 2>/dev/null || true
+            echo "firewalld port opened"
+          elif command -v ufw &>/dev/null; then
+            ufw allow ${PUBLIC_PORT}/tcp 2>/dev/null || true
+            echo "ufw port opened"
+          fi
+
+          # Also open in iptables as fallback
+          iptables -I INPUT -p tcp --dport ${PUBLIC_PORT} -j ACCEPT 2>/dev/null || true
+          echo "iptables rule added"
+
+          # Verify
+          echo "=== Nginx port check ==="
+          ss -tlnp | grep "${PUBLIC_PORT}" || echo "port ${PUBLIC_PORT} not listening"
+          echo "=== Internal app check ==="
+          curl -s -o /dev/null -w "HTTP %{http_code}\n" http://127.0.0.1:${INTERNAL_PORT}/ || echo "app check failed"
+          echo "Setup done"
+          '
+
+      - name: Verify public access
+        env:
+          ALIYUN_PORT: ${{ secrets.ALIYUN_PORT }}
+        run: |
+          SSH_PORT="${ALIYUN_PORT:-22}"
+          ssh -p "$SSH_PORT" "${{ secrets.ALIYUN_USER }}@${{ secrets.ALIYUN_HOST }}" '
+          echo "=== Public port test ==="
+          curl -s -o /dev/null -w "HTTP %{http_code}\n" http://116.62.220.255:8086/ || echo "public access failed"
+          '
