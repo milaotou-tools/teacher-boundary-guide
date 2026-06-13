@@ -55,6 +55,7 @@ jobs:
           APP_ENCRYPTION_KEY=${APP_ENCRYPTION_KEY}
           ADMIN_PASSWORD=${ADMIN_PASSWORD}
           TRUST_PROXY=true
+          COOKIE_SECURE=false
           STDENV
 
       - name: Rebuild and restart on server
