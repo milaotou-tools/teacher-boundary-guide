@@ -171,7 +171,10 @@ document.querySelector("#confirm-form").addEventListener("submit", async (event)
         consent: document.querySelector("#aggregate-consent").checked,
       }),
     });
-    document.querySelector("#result-link").href = data.resultUrl;
+    const fullUrl = new URL(data.resultUrl, location.href).href;
+    document.querySelector("#result-link").href = fullUrl;
+    const urlInput = document.querySelector("#result-url-text");
+    urlInput.value = fullUrl;
     // Save token so user can return from other pages
     const resultToken = new URLSearchParams(data.resultUrl.split("?")[1] || "").get("token");
     if (resultToken) {
@@ -182,5 +185,17 @@ document.querySelector("#confirm-form").addEventListener("submit", async (event)
     showMessage(error.message);
   } finally {
     button.disabled = false;
+  }
+});
+
+document.querySelector("#copy-result-url").addEventListener("click", async () => {
+  const input = document.querySelector("#result-url-text");
+  try {
+    await navigator.clipboard.writeText(input.value);
+    const btn = document.querySelector("#copy-result-url");
+    btn.textContent = "已复制";
+    setTimeout(() => { btn.textContent = "复制链接"; }, 2000);
+  } catch {
+    input.select();
   }
 });

@@ -1633,6 +1633,29 @@ select:focus {
   text-align: center;
 }
 
+.result-url-box {
+  display: flex;
+  gap: 8px;
+  margin-top: 24px;
+  justify-content: center;
+}
+
+.result-url-box input {
+  flex: 1;
+  max-width: 460px;
+  font-family: monospace;
+  font-size: 13px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--page);
+  color: var(--text);
+}
+
+.result-url-box .copy-button {
+  white-space: nowrap;
+}
+
 .flow-finish .primary-button {
   margin-top: 16px;
 }
