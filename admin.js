@@ -123,12 +123,13 @@ document.querySelector("#invite-form").addEventListener("submit", async (event) 
       method: "POST",
       body: JSON.stringify({
         label: document.querySelector("#invite-label").value,
-        maxUses: 30,
+        maxUses: Number(document.querySelector("#invite-max-uses").value) || 30,
         expiresInDays: 30,
       }),
     });
+    const usesText = result.maxUses === 0 ? "不限次数" : `最多${result.maxUses}次`;
     document.querySelector("#invite-output").textContent =
-      `邀请码：${result.code}（最多30次，30天有效；关闭后无法再次查看明文）`;
+      `邀请码：${result.code}（${usesText}，30天有效；关闭后无法再次查看明文）`;
   } catch (error) {
     notify(error.message);
   }

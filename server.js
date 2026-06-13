@@ -243,7 +243,7 @@ async function buildServer(overrides = {}) {
       WHERE code_hash = ? AND disabled_at IS NULL
         AND (expires_at IS NULL OR expires_at > CURRENT_TIMESTAMP)
     `).get(sha256(body.inviteCode));
-    if (!invite || invite.used_count >= invite.max_uses) {
+    if (!invite || (invite.max_uses > 0 && invite.used_count >= invite.max_uses)) {
       return reply.code(403).send({ error: "邀请码无效、已过期或使用次数已满。" });
     }
 
@@ -597,7 +597,7 @@ async function buildServer(overrides = {}) {
     if (!requireAdmin(request, reply)) return;
     const schema = z.object({
       label: z.string().trim().max(80).default(""),
-      maxUses: z.number().int().min(1).max(30).default(30),
+      maxUses: z.number().int().min(0).max(999).default(30),
       expiresInDays: z.number().int().min(1).max(365).default(30),
     });
     const body = parseBody(schema, request.body, reply);

@@ -39,7 +39,8 @@
             <h2>生成邀请码</h2>
             <form id="invite-form" class="inline-form">
               <input id="invite-label" placeholder="例如：第一批同事" maxlength="80">
-              <button class="secondary-button" type="submit">生成3次邀请码</button>
+              <input id="invite-max-uses" type="number" min="0" max="999" value="30" style="width:100px">
+              <button class="secondary-button" type="submit">生成邀请码</button>
             </form>
             <output id="invite-output"></output>
           </div>
