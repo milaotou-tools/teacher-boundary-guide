@@ -117,6 +117,17 @@ button {
   color: var(--red);
 }
 
+.header-result-link {
+  margin-left: auto;
+  color: var(--red);
+  font-size: 14px;
+  font-weight: 600;
+}
+.header-result-link:hover,
+.header-result-link:focus-visible {
+  text-decoration: underline;
+}
+
 main {
   width: min(1180px, calc(100% - 40px));
   margin: 0 auto;

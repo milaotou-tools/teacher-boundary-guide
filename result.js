@@ -2,6 +2,11 @@ const token = new URLSearchParams(location.search).get("token");
 const resultMessage = document.querySelector("#result-message");
 let resultData = null;
 
+// Save token so user can return from other pages
+if (token) {
+  try { localStorage.setItem("teacher-guide-last-result", token); } catch (e) {}
+}
+
 function escapeHtml(value) {
   return String(value).replace(/[&<>"']/g, (char) => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",

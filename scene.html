@@ -16,6 +16,7 @@
         <span>这事该我管吗？</span>
       </a>
       <a class="back-link" href="index.html#scenes">← 返回全部场景</a>
+      <a class="header-result-link" id="my-result-link" href="#" style="display:none">我的结果</a>
     </header>
 
     <main id="detail-content">
@@ -31,5 +32,15 @@
 
     <script src="data.js"></script>
     <script src="scene.js"></script>
+    <script>
+      (function () {
+        var token = localStorage.getItem("teacher-guide-last-result");
+        if (token) {
+          var link = document.getElementById("my-result-link");
+          link.href = "result.html?token=" + encodeURIComponent(token);
+          link.style.display = "";
+        }
+      })();
+    </script>
   </body>
 </html>

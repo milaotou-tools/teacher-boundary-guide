@@ -172,6 +172,11 @@ document.querySelector("#confirm-form").addEventListener("submit", async (event)
       }),
     });
     document.querySelector("#result-link").href = data.resultUrl;
+    // Save token so user can return from other pages
+    const resultToken = new URLSearchParams(data.resultUrl.split("?")[1] || "").get("token");
+    if (resultToken) {
+      try { localStorage.setItem("teacher-guide-last-result", resultToken); } catch (e) {}
+    }
     showPanel("finish", 4);
   } catch (error) {
     showMessage(error.message);

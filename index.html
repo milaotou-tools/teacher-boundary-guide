@@ -16,6 +16,7 @@
         <span>这事该我管吗？</span>
       </a>
       <span class="header-note">浙江 · 公办小学 · 新班主任</span>
+      <a class="header-result-link" id="my-result-link" href="#" style="display:none">我的结果</a>
     </header>
 
     <main>
@@ -102,5 +103,15 @@
 
     <script src="data.js"></script>
     <script src="app.js"></script>
+    <script>
+      (function () {
+        var token = localStorage.getItem("teacher-guide-last-result");
+        if (token) {
+          var link = document.getElementById("my-result-link");
+          link.href = "result.html?token=" + encodeURIComponent(token);
+          link.style.display = "";
+        }
+      })();
+    </script>
   </body>
 </html>
