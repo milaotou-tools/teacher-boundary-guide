@@ -64,4 +64,9 @@ npm run eval:ai
 
 ## 部署
 
-尚未部署。部署时使用 `aliyun-deploy` Skill，采用 Nginx + HTTPS + 单 PM2 进程，并在宝塔配置每日清理任务。
+- 公网地址：http://116.62.220.255:8086/（自测中，暂无域名/HTTPS）
+- 内部：127.0.0.1:4173，PM2 名称 teacher-boundary-guide
+- Nginx 8086→4173，配置 /www/server/panel/vhost/nginx/0.0.0.0_8086.conf
+- GitHub Actions SCP 直传部署（服务器无法直连 GitHub）
+- 阿里云安全组需放行 8086
+- 宝塔每日清理任务待配置

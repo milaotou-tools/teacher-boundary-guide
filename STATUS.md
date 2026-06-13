@@ -33,9 +33,21 @@
 - 浏览器桌面端与 390px 手机端通过，无横向溢出或控制台错误。
 - 投稿页、私密结果页和管理员入口已完成页面验收；完整数据流由自动化测试覆盖。
 
+## 部署
+
+- 服务器：116.62.220.255 (阿里云 ECS)
+- 公网地址：http://116.62.220.255:8086/
+- 内部端口：127.0.0.1:4173 (PM2: teacher-boundary-guide)
+- Nginx 反代：8086→4173，配置位于 /www/server/panel/vhost/nginx/0.0.0.0_8086.conf
+- 仓库：https://github.com/milaotou-tools/teacher-boundary-guide
+- 部署方式：GitHub Actions (deploy-via-scp.yml)，SCP 直传绕过服务器 GitHub 连接问题
+- 安全组：需放行 8086 端口
+- Cookie Secure：自测阶段通过 COOKIE_SECURE=false 禁用，正式上线需启用 HTTPS 后移除
+
 ## 待完成
 
-- 确认域名与阿里云部署方式后再上线内测。
+- 确认域名后配置 HTTPS 和正式上线。
+- 启用 COOKIE_SECURE=true。
 
 ## 2026-06-13 复验记录
 
