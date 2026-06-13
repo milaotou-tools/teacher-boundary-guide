@@ -179,6 +179,12 @@ document.querySelector("#confirm-form").addEventListener("submit", async (event)
     const resultToken = new URLSearchParams(data.resultUrl.split("?")[1] || "").get("token");
     if (resultToken) {
       try { localStorage.setItem("teacher-guide-last-result", resultToken); } catch (e) {}
+      // Show header link immediately, not just on next page load
+      var headerLink = document.getElementById("my-result-link");
+      if (headerLink) {
+        headerLink.href = "result.html?token=" + encodeURIComponent(resultToken);
+        headerLink.style.display = "";
+      }
     }
     showPanel("finish", 4);
   } catch (error) {
