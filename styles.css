@@ -1638,18 +1638,27 @@ select:focus {
   gap: 8px;
   margin-top: 24px;
   justify-content: center;
+  align-items: center;
 }
 
-.result-url-box input {
+.result-url-link {
   flex: 1;
-  max-width: 460px;
+  max-width: 500px;
   font-family: monospace;
   font-size: 13px;
   padding: 8px 12px;
   border: 1px solid var(--border);
   border-radius: 8px;
   background: var(--page);
-  color: var(--text);
+  color: var(--red);
+  text-decoration: underline;
+  word-break: break-all;
+  text-align: left;
+}
+
+.result-url-link:hover,
+.result-url-link:focus-visible {
+  background: #fdf2f0;
 }
 
 .result-url-box .copy-button {

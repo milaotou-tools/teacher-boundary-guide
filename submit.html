@@ -102,10 +102,10 @@
           <h2>请保存这条私密链接</h2>
           <p>它将在90天后失效。网站没有账号和找回系统，链接丢失后无法找回。</p>
           <div class="result-url-box" id="result-url-box">
-            <input id="result-url-text" readonly type="url" value="">
+            <a class="result-url-link" id="result-url-text" href="#" target="_blank" rel="noopener"></a>
             <button class="copy-button small-button" id="copy-result-url" type="button">复制链接</button>
           </div>
-          <a class="primary-button" id="result-link" href="#">查看我的结果</a>
+          <a class="primary-button" id="result-link" href="#">查看我的结果（新标签页打开）</a>
         </section>
 
         <div class="flow-message" id="flow-message" role="status" hidden></div>
@@ -117,11 +117,16 @@
     </footer>
     <script>
       (function () {
-        var token = localStorage.getItem("teacher-guide-last-result");
+        var token = getResultToken();
         if (token) {
           var link = document.getElementById("my-result-link");
           link.href = "result.html?token=" + encodeURIComponent(token);
           link.style.display = "";
+        }
+        function getResultToken() {
+          try { var t = localStorage.getItem("teacher-guide-last-result"); if (t) return t; } catch (e) {}
+          try { var m = document.cookie.match(/(?:^|; )teacher-last-result=([^;]*)/); if (m) return decodeURIComponent(m[1]); } catch (e) {}
+          return null;
         }
       })();
     </script>

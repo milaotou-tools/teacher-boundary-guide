@@ -34,11 +34,16 @@
     <script src="scene.js"></script>
     <script>
       (function () {
-        var token = localStorage.getItem("teacher-guide-last-result");
+        var token = getResultToken();
         if (token) {
           var link = document.getElementById("my-result-link");
           link.href = "result.html?token=" + encodeURIComponent(token);
           link.style.display = "";
+        }
+        function getResultToken() {
+          try { var t = localStorage.getItem("teacher-guide-last-result"); if (t) return t; } catch (e) {}
+          try { var m = document.cookie.match(/(?:^|; )teacher-last-result=([^;]*)/); if (m) return decodeURIComponent(m[1]); } catch (e) {}
+          return null;
         }
       })();
     </script>

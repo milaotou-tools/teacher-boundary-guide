@@ -173,13 +173,17 @@ document.querySelector("#confirm-form").addEventListener("submit", async (event)
     });
     const fullUrl = new URL(data.resultUrl, location.href).href;
     document.querySelector("#result-link").href = fullUrl;
-    const urlInput = document.querySelector("#result-url-text");
-    urlInput.value = fullUrl;
+    // Visible URL link
+    const urlLink = document.querySelector("#result-url-text");
+    urlLink.href = fullUrl;
+    urlLink.textContent = fullUrl;
     // Save token so user can return from other pages
     const resultToken = new URLSearchParams(data.resultUrl.split("?")[1] || "").get("token");
     if (resultToken) {
       try { localStorage.setItem("teacher-guide-last-result", resultToken); } catch (e) {}
-      // Show header link immediately, not just on next page load
+      // Cookie backup in case localStorage is blocked
+      try { document.cookie = "teacher-last-result=" + encodeURIComponent(resultToken) + "; path=/; max-age=7776000; SameSite=Lax"; } catch (e) {}
+      // Show header link immediately
       var headerLink = document.getElementById("my-result-link");
       if (headerLink) {
         headerLink.href = "result.html?token=" + encodeURIComponent(resultToken);
@@ -195,13 +199,18 @@ document.querySelector("#confirm-form").addEventListener("submit", async (event)
 });
 
 document.querySelector("#copy-result-url").addEventListener("click", async () => {
-  const input = document.querySelector("#result-url-text");
+  const link = document.querySelector("#result-url-text");
   try {
-    await navigator.clipboard.writeText(input.value);
+    await navigator.clipboard.writeText(link.href);
     const btn = document.querySelector("#copy-result-url");
     btn.textContent = "已复制";
     setTimeout(() => { btn.textContent = "复制链接"; }, 2000);
   } catch {
-    input.select();
+    // Fallback: select the link text
+    const range = document.createRange();
+    range.selectNodeContents(link);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
   }
 });
