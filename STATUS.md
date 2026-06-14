@@ -2,7 +2,7 @@
 
 ## 当前状态
 
-“有限生长版”已在本地完成，真实 `DEEPSEEK_API_KEY` 已配置并通过模型验收，当前主要卡点是上线前用户验收和部署，尚未部署。
+已部署到阿里云 ECS 自测中。用户可匿名投稿、获取私密结果、浏览12个公开场景。
 
 正式项目文件夹：`C:\Users\admin\Desktop\教师保障`
 
@@ -21,8 +21,13 @@
 - 新增 PM2 配置和每日过期清理脚本。
 - 增加静态资源白名单，阻止 `.env`、SQLite 数据库、后端源代码、依赖目录和项目文档被公开访问。
 - 增加正向范围闸门，完全不属于首轮五类问题的投稿会停止自动梳理。
-- 按 2026 年官方接口更新默认模型为 `deepseek-v4-flash`，补充 JSON 结构示例、长度与结束原因检查、短暂重试和生产故障显式提示。
+- 按 2026 年官方接口更新默认模型为 `deepseek-v4-flash`。
 - 新增 `npm run eval:ai`，用 4 个代表性场景验证真实模型匹配和提示注入抵抗。
+- 不限次数邀请码支持（maxUses=0）。
+- 所有页面"我的结果"导航链接，localStorage + cookie 双保险。
+- 私密链接改为可见可点击链接 + 一键复制。
+- 范围闸门放宽：移除家校沟通排除、收窄处分规则。
+- 部署脚本保留 storage/ 目录，数据库不再丢失。
 
 ## 验证
 
@@ -31,7 +36,6 @@
 - 依赖审计：0 个已知漏洞。
 - JavaScript 语法检查通过。
 - 浏览器桌面端与 390px 手机端通过，无横向溢出或控制台错误。
-- 投稿页、私密结果页和管理员入口已完成页面验收；完整数据流由自动化测试覆盖。
 
 ## 部署
 
@@ -40,18 +44,23 @@
 - 内部端口：127.0.0.1:4173 (PM2: teacher-boundary-guide)
 - Nginx 反代：8086→4173，配置位于 /www/server/panel/vhost/nginx/0.0.0.0_8086.conf
 - 仓库：https://github.com/milaotou-tools/teacher-boundary-guide
-- 部署方式：GitHub Actions (deploy-via-scp.yml)，SCP 直传绕过服务器 GitHub 连接问题
-- 安全组：需放行 8086 端口
-- Cookie Secure：自测阶段通过 COOKIE_SECURE=false 禁用，正式上线需启用 HTTPS 后移除
+- 部署方式：GitHub Actions (deploy-via-scp.yml)，SCP 直传
+- 安全组：已放行 8086
+- Cookie Secure：COOKIE_SECURE=false（无 HTTPS 阶段）
+- 数据库：storage/teacher-guide.db，部署时保留不删除
+
+## 当前邀请码
+
+`TCH-8CB37F8A` — 不限次数，2027-06-14 到期
 
 ## 待完成
 
 - 确认域名后配置 HTTPS 和正式上线。
 - 启用 COOKIE_SECURE=true。
+- 宝塔每日清理任务。
 
-## 2026-06-13 复验记录
+## 2026-06-14 状态
 
-- `npm test` 通过。
-- `npm run check` 通过。
-- `npm run eval:ai` 通过，4/4 代表性场景全部命中，提示注入未通过。
-- 本地已配置 `.env` 文件。
+- 服务在线，所有页面 200。
+- 管理员后台可访问（/admin.html）。
+- 不限次数邀请码可用。
