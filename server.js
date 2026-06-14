@@ -252,7 +252,7 @@ async function buildServer(overrides = {}) {
     const ipUsage = db.prepare(`
       SELECT start_count FROM ip_daily_limits WHERE day = ? AND ip_hash = ?
     `).get(day, ipHash);
-    if ((ipUsage?.start_count || 0) >= 5) {
+    if ((ipUsage?.start_count || 0) >= 50) {
       return reply.code(429).send({ error: "今天从当前网络启动的投稿已达5次，请明天再试。" });
     }
 
