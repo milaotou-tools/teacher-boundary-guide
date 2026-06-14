@@ -79,8 +79,8 @@ jobs:
           mkdir -p "$DEPLOY_PATH"
           cd "$DEPLOY_PATH"
 
-          # Clean old source but keep .user.ini
-          find . -mindepth 1 -not -name ".user.ini" -delete 2>/dev/null || true
+          # Clean old source but keep .user.ini and storage/
+          find . -mindepth 1 -not -name ".user.ini" -not -name "storage" -delete 2>/dev/null || true
 
           # Extract new source
           tar -xzf /tmp/deploy.tar.gz
